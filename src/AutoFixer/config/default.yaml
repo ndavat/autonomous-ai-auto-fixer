@@ -1,0 +1,61 @@
+# Default Configuration for Autonomous AI Auto-Fixer
+
+agent:
+  mode: dry-run # options: dry-run, fix
+  baseBranch: main
+  maxRetries: 3
+  repositories: []
+  maxFindingsPerRepo: 10
+  enableSelfCorrection: true
+
+vcs:
+  provider: github
+  token: null
+  apiUrl: null
+
+llm:
+  provider: azure-openai
+  modelName: gpt-4
+  temperature: 0.0
+  maxTokens: 4096
+  timeoutSeconds: 300
+
+secrets:
+  source: environment # Switch to environment mode to use GITHUB_TOKEN
+  vaultUrl: "https://your-actual-vault.vault.azure.net/" # Replace with your vault
+  tenantId: null
+  githubTokenSecretName: "github-token"
+
+ingestion:
+  mend:
+    enabled: true
+    apiUrl: ""
+    apiKey: ""
+  sonarQube:
+    enabled: false
+    hostUrl: ""
+    token: ""
+  trivy:
+    enabled: true
+    scanType: fs
+
+remediation:
+  priorityOrder:
+    - BUG
+    - VULNERABILITY
+    - BLOCKER
+    - CRITICAL
+    - MAJOR # Requires approval
+    - HIGH # Requires approval
+  approvalRequired:
+    - MAJOR
+    - HIGH
+  contextLines: 50
+
+validation:
+  linters:
+    python: ["flake8", "black", "isort"]
+    javascript: ["eslint"]
+    java: ["checkstyle"]
+  buildVerification:
+    enabled: false
