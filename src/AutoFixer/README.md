@@ -1,6 +1,6 @@
 # Autonomous AI Auto-Fixer - .NET 10 Console Application
 
-This is a .NET 10 console application port of the original Python-based Autonomous AI Auto-Fixer.
+A modern .NET 10 console application for autonomous code remediation.
 
 ## Project Structure
 
@@ -73,10 +73,10 @@ The application uses YAML configuration with environment variable overrides (pre
 
 See `config/default.yaml` for all available options.
 
-## Key Differences from Python Version
+## Features
 
-1. **CLI Framework**: Uses `System.CommandLine` instead of `click`
-2. **Logging**: Uses `Serilog` instead of `structlog`
+1. **CLI Framework**: Uses `System.CommandLine` for modern command-line parsing
+2. **Logging**: Uses `Serilog` for structured logging
 3. **Configuration**: Uses `Microsoft.Extensions.Configuration` with YAML support
 4. **Null Safety**: Enabled nullable reference types for better safety
 5. **Async/Await**: Native C# async/await pattern throughout

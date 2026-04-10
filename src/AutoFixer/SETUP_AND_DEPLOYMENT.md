@@ -375,8 +375,12 @@ export APPLICATIONINSIGHTS_CONNECTION_STRING=your_connection_string
 
 2. **Configuration Loading Errors**
    ```bash
-   # Validate JSON syntax
-   cat src/AutoFixer/appsettings.json | python -m json.tool
+   # Validate JSON syntax using dotnet
+   dotnet tool install -g dotnet-format
+   dotnet format --verify-no-changes src/AutoFixer/appsettings.json
+   
+   # Or use jq if available
+   cat src/AutoFixer/appsettings.json | jq .
    
    # Check file permissions
    chmod 644 src/AutoFixer/appsettings*.json
