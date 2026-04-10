@@ -1,15 +1,10 @@
 # Autonomous AI Auto-Fixer
 
-The **Autonomous AI Auto-Fixer** is an enterprise-grade agent designed to automate the remediation of technical debt and security vulnerabilities. It integrates with **SonarQube**, **Mend**, and **Trivy** to ingest findings, generate validated code fixes using AI, and submit Pull Requests to **Azure Repos** and **GitHub**.
+The **Autonomous AI Auto-Fixer** is an enterprise-grade .NET 10 console application designed to automate the remediation of technical debt and security vulnerabilities. It integrates with **SonarQube**, **Mend**, and **Trivy** to ingest findings, generate validated code fixes using AI, and submit Pull Requests to **Azure Repos** and **GitHub**.
 
-- [Implementation Plan](IMPLEMENTATION_PLAN.md)
-- [Task List](TASKS.md)
-- [Configuration & Ingestion Guide](docs/configuration.md)
+- [Configuration Guide](CONFIGURATION.md)
+- [Setup & Deployment Guide](SETUP_AND_DEPLOYMENT.md)
 - [Architecture & Tech Stack](docs/architecture.md)
-- [Architecture Diagram (Draw.io)](docs/architecture.drawio)
-- [Deployment & Execution Guide](docs/deployment.md)
-- [Testing & Verification Guide](docs/testing_guide.md)
-
 
 ## Current Progress
 - [x] **Phase 1**: Core Framework & VCS Integration (Azure DevOps, GitHub)
@@ -18,6 +13,7 @@ The **Autonomous AI Auto-Fixer** is an enterprise-grade agent designed to automa
 - [x] **Phase 4**: Trivy Integration (Container & OS Scanning)
 - [x] **Phase 5**: Remediation Engine (Linter validation, CI hooks, LLM Retries)
 - [x] **Phase 6**: Testing, Deployment & Documentation
+- [x] **.NET 10 Migration**: Complete transformation to modern .NET platform
 
 ## Key Features
 - **Autonomous Remediation**: Automatically fixes code smells, bugs, and dependency vulnerabilities using CodeSmell and Dependency strategies.
@@ -27,72 +23,113 @@ The **Autonomous AI Auto-Fixer** is an enterprise-grade agent designed to automa
 - **PR Monitoring**: Human-in-the-loop support via comment polling.
 - **Dry-Run Mode**: Supports a "Report Only" mode for human approval before applying any fixes.
 - **Enterprise-Grade Security**: Integrated with Azure Key Vault for secure credential management.
+- **Modern .NET Platform**: Built on .NET 10 with async/await patterns and nullable reference types.
 
 ## Tech Stack
 
-- **Language**: Python 3.11+
-- **Agent Orchestration**: Custom AI reasoning loops
-- **Runtime LLM**: GitHub Copilot / Claude Sonnet 4
-- **VCS**: Azure DevOps Python SDK, PyGithub
-- **Secrets**: Azure Key Vault
-- **Infrastructure**: Containerized deployment (Docker/Kubernetes)
+- **Framework**: .NET 10
+- **Language**: C# 12+
+- **Agent Orchestration**: Custom AI reasoning loops with async Task-based patterns
+- **Runtime LLM**: GitHub Copilot / Claude Sonnet 4 via HTTP clients
+- **VCS**: Azure DevOps REST API, GitHub REST API
+- **Secrets**: Azure Key Vault, User Secrets, Environment Variables
+- **Logging**: Serilog with console, file, and Application Insights sinks
+- **Configuration**: JSON/YAML configuration with environment variable overrides
+- **Testing**: xUnit, FluentAssertions, Moq
+- **Infrastructure**: Containerized deployment (Docker/Kubernetes), Azure App Service, AKS
 
 ## Setup
 
 ### Prerequisites
 
-- Python 3.11 or higher
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
 - Access to Azure Key Vault (with appropriate secrets configured)
 - VCS Credentials (PAT for Azure DevOps, GitHub App credentials)
+- IDE: Visual Studio 2022 (v17.8+) or JetBrains Rider, VS Code with C# extension
 
 ### Installation
 
-1. Create a virtual environment:
+1. **Clone the repository**:
    ```bash
-   python -m venv .venv
+   git clone https://github.com/ndavat/autonomous-ai-auto-fixer.git
+   cd autonomous-ai-auto-fixer
    ```
 
-2. Activate the virtual environment:
-   - **Windows**: `.venv\Scripts\Activate.ps1`
-   - **Linux/macOS**: `source .venv/bin/activate`
-
-3. Install the package in editable mode:
+2. **Restore dependencies**:
    ```bash
-   pip install -e ".[dev]"
+   dotnet restore
+   ```
+
+3. **Build the solution**:
+   ```bash
+   dotnet build --configuration Release
+   ```
+
+4. **Configure the application**:
+   - Copy `appsettings.json` to your environment-specific file (e.g., `appsettings.Development.json`)
+   - Update configuration values or use environment variables (see [CONFIGURATION.md](CONFIGURATION.md))
+
+5. **Run tests** (optional):
+   ```bash
+   dotnet test
    ```
 
 ## Usage
 
 Run the autofixer in dry-run mode:
 ```bash
-autofixer --mode dry-run
+dotnet run -- --mode dry-run
+```
+
+Or publish and run as a standalone executable:
+```bash
+dotnet publish -c Release -o ./publish
+./publish/AutoFixer --mode dry-run
 ```
 
 Review the report and approve fixes:
 ```bash
-autofixer --mode fix --approve-all
+dotnet run -- --mode fix --approve-all
 ```
+
+### CLI Options
+
+```bash
+dotnet run -- --help
+```
+
+Common options:
+- `--mode`: Operation mode (`dry-run`, `fix`, `report`)
+- `--config`: Path to configuration file (default: `appsettings.json`)
+- `--repo`: Target repository (org/repo format)
+- `--branch`: Target branch for PRs
+- `--input-file`: Path to input file for file-based ingestion
+- `--approve-all`: Automatically approve all fixes (use with caution)
+- `--verbose`: Enable verbose logging
+
+For detailed CLI usage, see [SETUP_AND_DEPLOYMENT.md](SETUP_AND_DEPLOYMENT.md).
 
 ## Audit & Logging
 
-
-The system maintains a tamper-proof audit log of all actions, including:
+The system maintains a tamper-proof audit log of all actions using Serilog, including:
 - Ingested findings
 - Generated prompts and LLM responses
 - Validation results
 - PR creation details
 
+Logs can be output to console, files, or Azure Application Insights based on configuration.
+
 ---
 
 ## Architecture Overview
 
-The Autonomous AI Auto-Fixer is built as a modular pipeline:
+The Autonomous AI Auto-Fixer is built as a modular .NET pipeline:
 
-1. **Ingestion Layer**: Fetches data from SonarQube (Clean Code), Mend (SCA), and Trivy (Container/SCM).
-2. **Remediation Engine**: Processes, sorts, and classifies findings based on risk policy.
+1. **Ingestion Layer**: Fetches data from SonarQube (Clean Code), Mend (SCA), and Trivy (Container/SCM) via HTTP clients.
+2. **Remediation Engine**: Processes, sorts, and classifies findings based on risk policy using async Task-based patterns.
 3. **Strategy Layer**: Selects specific logic (CodeSmell, Dependency, Security) to apply fixes.
-4. **AI Orchestration**: Uses GitHub Copilot / Claude 3.5 to generate code and self-correct based on validation feedback.
-5. **VCS Layer**: Manages Git operations and Pull Requests on Azure DevOps (Primary) and GitHub.
+4. **AI Orchestration**: Uses GitHub Copilot / Claude Sonnet 4 via HTTP APIs to generate code and self-correct based on validation feedback.
+5. **VCS Layer**: Manages Git operations and Pull Requests on Azure DevOps (Primary) and GitHub via REST APIs.
 
 ```mermaid
 graph LR
@@ -109,9 +146,11 @@ graph LR
 
 ## Configuration & Ingestion
 
+See [CONFIGURATION.md](CONFIGURATION.md) for complete configuration guide.
+
 **API-Based Ingestion:**
-- Configure SonarQube, Mend, and Trivy API details in `config/default.yaml`.
-- Secrets (tokens/keys) are retrieved from Azure Key Vault or environment variables.
+- Configure SonarQube, Mend, and Trivy API details in `appsettings.json` or environment-specific files.
+- Secrets (tokens/keys) are retrieved from Azure Key Vault, User Secrets, or environment variables.
 
 **File-Based Ingestion:**
 - Pass exported reports (JSON, PDF, Excel, CSV, SARIF) via the CLI `--input-file` flag.
@@ -120,20 +159,45 @@ graph LR
 **Repository Mapping:**
 - The agent maps findings to repositories using metadata in reports or CLI flags.
 
+**Environment Variables:**
+- Override any configuration using double-underscore notation: `Section__Setting=value`
+- Example: `Agent__Mode=fix`, `VCS__AzureDevOps__Organization=my-org`
+
 ---
 
 ## Deployment
 
+See [SETUP_AND_DEPLOYMENT.md](SETUP_AND_DEPLOYMENT.md) for comprehensive deployment guide.
+
 **Containerized:**
 - Deploy on Azure Container Apps, AKS, or locally with Docker Compose.
 - Use the provided `Dockerfile` and `docker-compose.yml`.
+- Build and run: `docker-compose up -d`
+
+**Publish for Production:**
+```bash
+# Windows
+dotnet publish -c Release -r win-x64 --self-contained -o ./publish/win-x64
+
+# Linux
+dotnet publish -c Release -r linux-x64 --self-contained -o ./publish/linux-x64
+
+# macOS
+dotnet publish -c Release -r osx-x64 --self-contained -o ./publish/osx-x64
+```
+
+**Azure Deployments:**
+- **App Service**: Deploy as a web app or container
+- **Container Instances**: Quick container deployment
+- **AKS**: Kubernetes orchestration for scale
+- See [SETUP_AND_DEPLOYMENT.md](SETUP_AND_DEPLOYMENT.md) for detailed instructions
 
 **CLI Usage:**
-- Run locally after `pip install -e .` or in a container.
+- Run locally after building or publishing.
 - Example:
    ```bash
-   autofixer --mode dry-run --repo "my-org/my-repo" --branch "develop"
-   autofixer --mode fix --input-file "./manual_reports/mend_vulnerabilities.pdf" --repo "my-org/web-app"
+   dotnet run -- --mode dry-run --repo "my-org/my-repo" --branch "develop"
+   dotnet run -- --mode fix --input-file "./manual_reports/mend_vulnerabilities.json" --repo "my-org/web-app"
    ```
 
 **PR Workflow:**
@@ -143,6 +207,11 @@ graph LR
 ---
 
 ## Testing & Verification
+
+**Unit Tests:**
+```bash
+dotnet test --verbosity normal
+```
 
 **Dry-Run Safety:**
 - Run in dry-run mode to preview changes without modifying code.
@@ -156,11 +225,24 @@ graph LR
 
 ---
 
-## References & Documentation
+## Contributing
 
-- [Implementation Plan](IMPLEMENTATION_PLAN.md)
-- [Task List](TASKS.md)
-- [Configuration & Ingestion Guide](docs/configuration.md)
-- [Architecture & Tech Stack](docs/architecture.md)
-- [Deployment & Execution Guide](docs/deployment.md)
-- [Testing & Verification Guide](docs/testing_guide.md)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+Please ensure all tests pass (`dotnet test`) and follow the existing code style.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## Support
+
+For issues, questions, or contributions, please open an issue on the GitHub repository or contact the development team.
