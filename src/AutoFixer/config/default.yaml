@@ -1,34 +1,16 @@
 # Default Configuration for Autonomous AI Auto-Fixer
+# Bound to AutoFixer.Models.AppConfig via ConfigLoader.
 
 agent:
-  mode: dry-run # options: dry-run, fix
+  mode: DryRun             # DryRun | Fix (bound to AgentMode enum)
   baseBranch: main
-  maxRetries: 3
   repositories: []
   maxFindingsPerRepo: 10
   enableSelfCorrection: true
 
-vcs:
-  provider: github
-  token: null
-  apiUrl: null
-
-llm:
-  provider: azure-openai
-  modelName: gpt-4
-  temperature: 0.0
-  maxTokens: 4096
-  timeoutSeconds: 300
-
-secrets:
-  source: environment # Switch to environment mode to use GITHUB_TOKEN
-  vaultUrl: "https://your-actual-vault.vault.azure.net/" # Replace with your vault
-  tenantId: null
-  githubTokenSecretName: "github-token"
-
 ingestion:
   mend:
-    enabled: true
+    enabled: false
     apiUrl: ""
     apiKey: ""
   sonarQube:
@@ -36,26 +18,54 @@ ingestion:
     hostUrl: ""
     token: ""
   trivy:
-    enabled: true
+    enabled: false
     scanType: fs
+  csv:
+    enabled: false
+    idColumn: "Id"
+    severityColumn: "Severity"
+    typeColumn: "Type"
+    titleColumn: "Title"
+    descriptionColumn: "Description"
+    filePathColumn: "FilePath"
+    lineNumberColumn: "LineNumber"
+  excel:
+    enabled: false
+    sheetIndex: 0
+    idColumn: "Id"
+    severityColumn: "Severity"
+    typeColumn: "Type"
+    titleColumn: "Title"
+    descriptionColumn: "Description"
+    filePathColumn: "FilePath"
+    lineNumberColumn: "LineNumber"
+  pdf:
+    enabled: false
+  sarif:
+    enabled: false
 
 remediation:
-  priorityOrder:
-    - BUG
-    - VULNERABILITY
-    - BLOCKER
-    - CRITICAL
-    - MAJOR # Requires approval
-    - HIGH # Requires approval
-  approvalRequired:
-    - MAJOR
-    - HIGH
-  contextLines: 50
+  maxRetries: 3
+  timeoutSeconds: 300
+  enableValidation: true
+  validationRetries: 1
+  linters: []
+  buildVerificationCommands: []  # e.g. ["dotnet build"]
 
-validation:
-  linters:
-    python: ["flake8", "black", "isort"]
-    javascript: ["eslint"]
-    java: ["checkstyle"]
-  buildVerification:
-    enabled: false
+llm:
+  provider: azure-openai
+  modelName: gpt-4
+  temperature: 0.0
+  maxTokens: 4096
+  timeoutSeconds: 300
+  endpoint: null
+  apiKey: null
+
+secrets:
+  source: environment      # environment | keyvault
+  keyVaultUrl: null
+
+vcs:
+  provider: github         # github | azure-devops
+  token: null
+  apiUrl: null

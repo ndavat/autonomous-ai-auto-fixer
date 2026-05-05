@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using AutoFixer.Models;
+using NetEscapades.Configuration.Yaml;
 
 namespace AutoFixer;
 

@@ -7,13 +7,18 @@ The **Autonomous AI Auto-Fixer** is an enterprise-grade .NET 10 console applicat
 - [Architecture & Tech Stack](docs/architecture.md)
 
 ## Current Progress
-- [x] **Phase 1**: Core Framework & VCS Integration (Azure DevOps, GitHub)
-- [x] **Phase 2**: SonarQube Integration (API & File Ingestion)
-- [x] **Phase 3**: Mend Integration (SCA, PDF/Excel/CSV)
-- [x] **Phase 4**: Trivy Integration (Container & OS Scanning)
-- [x] **Phase 5**: Remediation Engine (Linter validation, CI hooks, LLM Retries)
-- [x] **Phase 6**: Testing, Deployment & Documentation
-- [x] **.NET 10 Migration**: Complete transformation to modern .NET platform
+- [x] **Core Framework**: .NET 10 console app, YAML/env config, Serilog logging
+- [x] **Ingestion**: SonarQube (API + file), Mend (API + file), Trivy (file) — JSON only for now
+- [x] **Remediation Engine**: finding orchestration, validation loop with self-correction
+- [x] **LLM Client**: Azure OpenAI chat-completions (with key/endpoint env-var fallback and transient-error retry)
+- [x] **VCS Client**: GitHub REST API (branch create, file commit via Contents API, open PR)
+- [x] **Validation**: Cross-platform linter shell-out (Windows `cmd`, Unix `/bin/sh`)
+- [x] **Azure DevOps VCS client**: Azure DevOps Git REST API (branch create, push commits, open PR)
+- [x] **SARIF ingestion**: Parse industry-standard `.sarif` JSON reports
+- [x] **Multi-format ingestion** (PDF/Excel/CSV): `CsvIngestor` (CsvHelper), `ExcelIngestor` (ClosedXML), `PdfIngestor` (PdfPig) — all file-based with configurable column mapping and best-effort pattern extraction
+- [x] **Build verification / CI integration**: Shell-based build verification (`ShellBuildVerificationService`) that applies patches locally, runs configured build commands (e.g. `dotnet build`), and restores original files
+- [x] **Azure Key Vault secret source**: `ISecretProvider` abstraction with Azure Key Vault (`DefaultAzureCredential`), environment variable fallback, and composite provider
+- [ ] **PR-comment feedback loop**: Not yet implemented
 
 ## Key Features
 - **Autonomous Remediation**: Automatically fixes code smells, bugs, and dependency vulnerabilities using CodeSmell and Dependency strategies.

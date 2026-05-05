@@ -3,9 +3,9 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
 # Copy solution and project files first for better layer caching
-COPY ["AutoFixer.slnx", "./"]
+COPY ["AutoFixer.sln", "./"]
 COPY ["src/AutoFixer/AutoFixer.csproj", "src/AutoFixer/"]
-COPY ["tests/AutoFixer.Tests/AutoFixer.Tests.csproj", "tests/AutoFixer.Tests/"]
+COPY ["AutoFixer.Tests/AutoFixer.Tests.csproj", "AutoFixer.Tests/"]
 
 # Restore dependencies
 RUN dotnet restore "src/AutoFixer/AutoFixer.csproj"

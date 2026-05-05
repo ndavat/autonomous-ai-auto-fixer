@@ -1,57 +1,71 @@
 # Default Configuration for Autonomous AI Auto-Fixer
+# Bound to AutoFixer.Models.AppConfig via ConfigLoader.
 
 agent:
-  mode: dry-run  # options: dry-run, fix
-  max_retries: 3
-  risk_policy: low-risk-only
-
-vcs:
-  primary: azure-devops
-  azure_devops:
-    org_url: "https://dev.azure.com/your-org"
-    project: "your-project"
-  github:
-    app_id: null
-    installation_id: null
-
-llm:
-  provider: github-copilot
-  model: auto
-  temperature: 0.0
-  max_tokens: 4096
-
-secrets:
-  source: environment  # Switch to environment mode to use GITHUB_TOKEN
-  vault_url: "https://your-actual-vault.vault.azure.net/"  # Replace with your vault
-  tenant_id: null
-  github_token_secret_name: "github-token"
+  mode: DryRun             # DryRun | Fix (bound to AgentMode enum)
+  baseBranch: main
+  repositories: []
+  maxFindingsPerRepo: 10
+  enableSelfCorrection: true
 
 ingestion:
-  sonarqube:
-    url: null
-    prioritize_bugs: true
   mend:
-    enabled: true
+    enabled: false
+    apiUrl: ""
+    apiKey: ""
+  sonarQube:
+    enabled: false
+    hostUrl: ""
+    token: ""
   trivy:
-    enabled: true
+    enabled: false
+    scanType: fs
+  csv:
+    enabled: false
+    idColumn: "Id"
+    severityColumn: "Severity"
+    typeColumn: "Type"
+    titleColumn: "Title"
+    descriptionColumn: "Description"
+    filePathColumn: "FilePath"
+    lineNumberColumn: "LineNumber"
+  excel:
+    enabled: false
+    sheetIndex: 0
+    idColumn: "Id"
+    severityColumn: "Severity"
+    typeColumn: "Type"
+    titleColumn: "Title"
+    descriptionColumn: "Description"
+    filePathColumn: "FilePath"
+    lineNumberColumn: "LineNumber"
+  pdf:
+    enabled: false
+  sarif:
+    enabled: false
 
 remediation:
-  priority_order:
-    - BUG
-    - VULNERABILITY
-    - BLOCKER
-    - CRITICAL
-    - MAJOR  # Requires approval
-    - HIGH   # Requires approval
-  approval_required:
-    - MAJOR
-    - HIGH
-  context_lines: 50
+  maxRetries: 3
+  timeoutSeconds: 300
+  enableValidation: true
+  validationRetries: 1
+  linters: []
+  buildVerificationCommands: []  # e.g. ["dotnet build"]
 
-validation:
-  linters:
-    python: ["flake8", "black", "isort"]
-    javascript: ["eslint"]
-    java: ["checkstyle"]
-  build_verification:
-    enabled: false
+llm:
+  provider: azure-openai
+  modelName: gpt-4
+  temperature: 0.0
+  maxTokens: 4096
+  timeoutSeconds: 300
+  endpoint: null
+  apiKey: null
+
+secrets:
+  source: environment      # environment | keyvault
+  keyVaultUrl: null
+
+vcs:
+  provider: github         # github | azure-devops
+  token: null
+  apiUrl: null

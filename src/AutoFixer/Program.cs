@@ -28,21 +28,18 @@ public class Program
         );
 
         var inputFileOption = new Option<string?>(
-            "--input-file", 
-            null, 
-            "Path to input file (PDF, CSV, Excel, etc.)"
+            "--input-file",
+            description: "Path to input file (PDF, CSV, Excel, etc.)"
         );
 
         var repoOption = new Option<string?>(
-            "--repo", 
-            null, 
-            "Specify a single repository to scan"
+            "--repo",
+            description: "Specify a single repository to scan"
         );
 
         var branchOption = new Option<string?>(
-            "--branch", 
-            null, 
-            "The base branch to scan and branch off from (e.g., 'main', 'develop')"
+            "--branch",
+            description: "The base branch to scan and branch off from (e.g., 'main', 'develop')"
         );
 
         var rootCommand = new RootCommand("Autonomous AI Auto-Fixer - .NET 10 Console App")
@@ -66,7 +63,7 @@ public class Program
             AppConfig config;
             try
             {
-                config = ConfigLoader.LoadConfig(configPath);
+                config = ConfigLoader.LoadConfig(configPath ?? "config/default.yaml");
             }
             catch (Exception ex)
             {
@@ -76,7 +73,7 @@ public class Program
             }
 
             // Override mode from CLI
-            config.Agent.Mode = mode.ToLower() == "fix" ? AgentMode.Fix : AgentMode.DryRun;
+            config.Agent.Mode = (mode ?? "").ToLower() == "fix" ? AgentMode.Fix : AgentMode.DryRun;
             
             if (!string.IsNullOrEmpty(baseBranch))
             {
