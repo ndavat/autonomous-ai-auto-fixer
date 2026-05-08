@@ -18,13 +18,35 @@ src/AutoFixer/
 ├── Audit/
 │   └── Logger.cs              # Serilog logging setup
 ├── Ingestion/
-│   └── IFindingIngestor.cs    # Ingestor interface
+│   ├── IFindingIngestor.cs    # Ingestor interface
+│   ├── MendIngestor.cs        # Mend/WhiteSource vulnerability ingest
+│   ├── SonarQubeIngestor.cs   # SonarQube analysis results
+│   ├── TrivyIngestor.cs       # Trivy vulnerability scans
+│   ├── SarifIngestor.cs       # SARIF format parsing
+│   ├── CsvIngestor.cs         # CSV-based scan reports
+│   ├── ExcelIngestor.cs       # Excel (.xlsx) scan reports
+│   └── PdfIngestor.cs         # PDF scan report extraction
+├── LLM/
+│   ├── ILlmClient.cs          # LLM client interface
+│   └── AzureOpenAIClient.cs   # Azure OpenAI chat-completions client
 ├── Remediation/
-│   └── RemediationEngine.cs   # Core remediation engine
-├── Validation/                # (Placeholder for validation logic)
-├── VCS/                       # (Placeholder for VCS clients)
-├── Secrets/                   # (Placeholder for secrets management)
-└── Strategies/                # (Placeholder for remediation strategies)
+│   └── RemediationEngine.cs   # Core remediation orchestrator
+├── Secrets/
+│   ├── ISecretProvider.cs     # Secret resolution interface
+│   ├── EnvironmentSecretProvider.cs
+│   ├── AzureKeyVaultSecretProvider.cs
+│   ├── CompositeSecretProvider.cs
+│   └── SecretResolver.cs      # Unified fallback-chain resolver
+├── Validation/
+│   ├── IValidationService.cs  # Fix validation interface
+│   ├── SimpleValidationService.cs  # Linter-based validation
+│   ├── IBuildVerificationService.cs
+│   └── ShellBuildVerificationService.cs  # Build command verification
+└── VCS/
+    ├── IVcsClient.cs          # VCS client interface
+    ├── GitHubClient.cs        # GitHub REST API client
+    ├── AzureDevOpsClient.cs   # Azure DevOps REST API client
+    └── PullRequestRequest.cs  # PR request DTOs
 ```
 
 ## Prerequisites
@@ -81,15 +103,16 @@ See `config/default.yaml` for all available options.
 4. **Null Safety**: Enabled nullable reference types for better safety
 5. **Async/Await**: Native C# async/await pattern throughout
 
-## Next Steps
+## Implementation Status
 
-To complete the port, implement the following components:
-
-- [ ] Mend ingestor (`Ingestion/Mend/`)
-- [ ] SonarQube ingestor (`Ingestion/SonarQube/`)
-- [ ] Trivy ingestor (`Ingestion/Trivy/`)
-- [ ] LLM client for remediation suggestions
-- [ ] VCS clients (GitHub, Azure DevOps)
-- [ ] PR creation and monitoring
-- [ ] Build verification and linting
-- [ ] Self-correction logic
+- [x] **Core CLI Framework**: System.CommandLine with --mode, --config, --input-file, --repo, --branch
+- [x] **Configuration**: YAML config loading with environment variable overrides (prefix `AUTOFIXER_`)
+- [x] **Logging**: Serilog with console and file sinks (rolling daily)
+- [x] **Ingestors**: Mend, SonarQube, Trivy, SARIF, CSV, Excel, PDF
+- [x] **LLM Client**: Azure OpenAI chat-completions with retry logic
+- [x] **VCS Clients**: GitHub REST API and Azure DevOps REST API
+- [x] **Validation**: Linter shell-out and build verification service
+- [x] **Secrets**: Environment variables, Azure Key Vault, and composite provider
+- [x] **Self-Correction**: Configurable retry loop with validation feedback
+- [x] **Unit Tests**: Comprehensive test suite covering all major components
+- [ ] **PR Comment Feedback Loop**: Not yet implemented (Phase 4)

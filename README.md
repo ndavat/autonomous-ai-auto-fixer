@@ -2,9 +2,10 @@
 
 The **Autonomous AI Auto-Fixer** is an enterprise-grade .NET 10 console application designed to automate the remediation of technical debt and security vulnerabilities. It integrates with **SonarQube**, **Mend**, and **Trivy** to ingest findings, generate validated code fixes using AI, and submit Pull Requests to **Azure Repos** and **GitHub**.
 
-- [Configuration Guide](CONFIGURATION.md)
-- [Setup & Deployment Guide](SETUP_AND_DEPLOYMENT.md)
-- [Architecture & Tech Stack](docs/architecture.md)
+- [Configuration Guide](src/AutoFixer/CONFIGURATION.md)
+- [Setup & Deployment Guide](src/AutoFixer/SETUP_AND_DEPLOYMENT.md)
+- [Contributing Guide](CONTRIBUTING.md)
+- [Playbook / Architecture](playbook.md)
 
 ## Current Progress
 - [x] **Core Framework**: .NET 10 console app, YAML/env config, Serilog logging

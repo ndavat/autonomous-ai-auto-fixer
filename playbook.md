@@ -341,14 +341,21 @@ az container create --resource-group autofixer-rg --name autofixer --image autof
 | `Failed to load configuration` | YAML file missing or malformed | Check path, validate YAML syntax |
 | `dotnet: command not found` | .NET SDK not installed | Install .NET 10 SDK |
 | `Permission denied` on Linux | Executable lacks execute permission | `chmod +x ./publish/linux-x64/AutoFixer` |
-| No findings processed | Ingestors not implemented yet | Currently placeholder; implement ingestors |
-| PR not created | VCS client not implemented | Implement GitHub/Azure DevOps client |
+| No findings processed | Ingestors not enabled in config | Check `config/default.yaml` that ingestors are enabled |
+| PR not created | VCS credentials missing or invalid | Verify `VCS__GitHub__AppId`/`InstallationId` (GitHub App) or `VCS__AzureDevOps__*` (Azure DevOps) in config |
 | Log files not created | `logs/` directory missing or permissions | Ensure `logs/` exists and is writable |
+| LLM fix generation fails | API key/endpoint not configured | Verify `Llm__ApiKey` and `Llm__Endpoint` in config |
 
 **Enable Debug Logging**:
 ```bash
 export AUTOFIXER_LOGGING__LEVEL=Debug
 dotnet run --project src/AutoFixer -- --mode dry-run
+```
+
+**Verify Configuration**:
+```bash
+# Run in dry-run mode with verbose logging to validate config
+dotnet run --project src/AutoFixer -- --mode dry-run --verbose
 ```
 
 ---
@@ -383,7 +390,9 @@ dotnet run --project src/AutoFixer -- --mode dry-run
 - [ ] Add performance benchmarks
 
 ### Phase 6: Documentation & Release
-- [ ] Finalize user guide (playbook.md – this document)
-- [ ] Write contributor guide
-- [ ] Create architecture diagram (update docs/architecture.drawio)
+- [x] Finalize user guide (playbook.md – this document)
+- [x] Write contributor guide (CONTRIBUTING.md)
+- [x] Add LICENSE file (MIT)
+- [x] Add CHANGELOG.md
+- [x] Create architecture diagram (update docs/architecture.drawio)
 - [ ] Tag v1.0 release

@@ -22,15 +22,44 @@
 - Store it securely in Azure Key Vault
 
 ### 3. Update Configuration
+
+**Using appsettings.json:**
+```json
+{
+  "vcs": {
+    "primary": "github",
+    "github": {
+      "appId": 123456,
+      "installationId": 789012
+    }
+  },
+  "secrets": {
+    "source": "azure-key-vault",
+    "githubTokenSecretName": "github-app-private-key"
+  }
+}
+```
+
+**Using environment variables:**
+```bash
+export VCS__Primary=github
+export VCS__GitHub__AppId=123456
+export VCS__GitHub__InstallationId=789012
+export SECRETS__Source=azure-key-vault
+export SECRETS__GitHubTokenSecretName=github-app-private-key
+```
+
+**Using YAML config (config/default.yaml):**
 ```yaml
 vcs:
   primary: github
   github:
-    app_id: 123456  # Your App ID
-    installation_id: 789012  # Installation ID
+    appId: 123456
+    installationId: 789012
 
 secrets:
-  github_app_private_key_secret_name: "github-app-private-key"
+  source: azure-key-vault
+  githubTokenSecretName: github-app-private-key
 ```
 
 ### 4. Install App
